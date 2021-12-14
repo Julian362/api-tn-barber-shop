@@ -27,5 +27,13 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Julian362/api-tn-barber-shop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Julian362/api-tn-barber-shop/issues"
+  },
+  "homepage": "https://github.com/Julian362/api-tn-barber-shop#readme"
 }
