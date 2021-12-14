@@ -103,6 +103,10 @@ app.get("/consultar/trabajadores/:rol", function (req, res) {
     res.send(prod);
 })
 
+app.get("/consultar/trabajador/:nickname", function(req,res) {
+    const prod = persona.find(p => p.nickname === req.params.nickname)
+    res.send(prod);
+})
 
 
 app.listen(8081, function () {
