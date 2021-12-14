@@ -98,6 +98,10 @@ app.post("/producto/eliminar", function (req, res) {
     res.send({status:"OK",msg:"Producto Eliminado Satisfactoriamente"});
 })
 
+app.get("/consultar/trabajadores/:rol", function (req, res) {
+    const prod = persona
+    res.send(prod);
+})
 
 
 
