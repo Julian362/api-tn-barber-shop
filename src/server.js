@@ -100,6 +100,15 @@ app.get("/consultar/trabajador/:nickname", async function(req,res) {
     res.send(prod);
 })
 
+app.get("/usuario/datospersonales/:nickname", async function(req,res){
+    const personas = await PersonasModel.findOne({nickname:req.params.nickname})
+    res.send(personas);
+})
+
+app.get("/usuario/editar/:nombre-:apellido-:documento-:t_documento-:nickname-:correo-:password", function(req,res){
+    actualizar(req.params.nombre,req.params.apellido,req.params.t_documento,req.params.documento,req.params.nickname,req.params.correo,req.params.password)
+    res.send("mensaje predeterminado de backend registro");
+})
 
 app.listen(8081, function () {
     console.log("Servidor corriendo Puerto 8081");
