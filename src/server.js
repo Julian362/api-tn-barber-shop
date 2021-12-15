@@ -1,110 +1,102 @@
-// Importa a expres
 const express = require("express");
-// lo instancia a app
-const app = express();
-// Cors libreria para hacer peticiones desde otro dominio
 const cors = require("cors");
-// importa la base de datos
 const { persona } = require("./datos");
 const mongoose= require("mongoose");
 const producto = require("./models/prodcutoModel");
 
-// Conectar con mongoose y a la vez es una promesa
-mongoose.connect("mongodb://localhost:27017/tienda")
-.then(res=>console.log("conectado a la BD"))
-.catch(err => console.log("Error: ",err));
-
-
-// le digo a app que use esa libreria para consulta abierta middleware cors
+const app = express();
 app.use(cors());
 app.use(express.json());
-// La primera es la ruta, la segunda es la funcion controladora CallBack
-app.get("/", function (req, res) {
-    res.send("Hola Mundo");
-})
 
-/* Api guardar producto */
-app.post("/producto/guardar", function(req,res){
-    const data =req.body;
-    const prod = new productos(data);
-    prod.save(function(error){
-        if (error){
-            res.send({status:"error",msg:"Producto no guardado"});
-            return false;
-        }
-        res.send({status:"Ok", msg:"Producto guardado Good Fine..!!"});
+const url = "mongodb+srv://DavHD:PhmFRjvYHmaSB4P@misiontic.d2mqp.mongodb.net/barbershop?retryWrites=true&w=majority";
+
+mongoose.connect(url,{ 
+   
+})
+.then( ()=> console.log('Conectado a mongo'))
+.catch( (e)=> console.log('error en la conexion es' + e))
+
+const PersonasSchema = mongoose.Schema({
+    nombre:String,
+    apellido:String,
+    tipo_documento:String,
+    numero_documento:Number,
+    nickname:String,
+    correo:String,
+    password:String,
+    rol:String,
+},{versionKey:false})
+
+const PersonasModel = mongoose.model('Personas',PersonasSchema)
+// const Trabajadores = mongoose.model('')
+
+const mostrar = async ()=>{
+    const RegistrosTotales = await PersonasModel.find();
+    console.log(RegistrosTotales)
+}
+// const mostrarEspecifico = async (Nick) =>{
+//     const RegistroEspecifico = await PersonasModel.findOne({Nickname:Nick});
+// }
+
+const crear = async (nombre,apellido,t_documento,n_documento,nickname,correo,password)=>{
+    const personas = new PersonasModel({
+        nombre:nombre,
+        apellido:apellido,
+        tipo_documento:t_documento,
+        numero_documento:n_documento,
+        nickname:nickname,
+        correo:correo,
+        password:password,
+        rol:"usuario externo"
     })
-})
+    const resultados = await personas.save();
+    console.log(resultados)
+}
+const actualizar = async (nombre,apellido,t_documento,n_documento,nickname,correo,password)=>{
+    const persona = await PersonasModel.updateOne({nickname:nickname},
+    {
+        $set:{
+            nombre:nombre,
+            apellido:apellido,
+            tipo_documento:t_documento,
+            numero_documento:n_documento,
+            correo:correo,
+            password:password
+        }
+    })
+}
+const eliminar = async (Nick)=>{
+    const persona = await PersonasModel.deleteOne({nickname:Nick})
+    console.log(persona);
+}
+//mostrar()
+//crear()
+//actualizar('joselo')
+//eliminar('pedrito')
+//mostrarEspecifico('DavHD');
 
-
-
-app.get("/producto/consultar/:name", function (req, res) {
+app.get("/personas/:nickname", async function (req, res) {
     // find es una funcion que ayuda a buscar dentro de un array
     // req, trael la consulta con el parametro deseado
-    const prod = persona.find(p => p.nombre === req.params.name)
+    const personas = await PersonasModel.findOne({nickname:req.params.nickname})
+    console.log(personas)
+    res.send(personas);
+})
+
+
+app.get("/consultar/trabajadores/:rol", async function (req, res) {
+    const prod = await PersonasModel.find();
+    console.log(prod)
     res.send(prod);
 })
 
-
-// Api rest Editar producto en BD
-// ruta:"/producto/editar"
-// Metodo: POST
-// Datos de entrada:{nombre:nombre,precio:precio,stock:stock}
-// Datos de respuesta:{status:"OK",msg:"Editado Satisfactoriamente"}
-
-app.post("/producto/editar", function (req, res) {
-    // capturar los datos que vienen del cliente
-    const nom = req.body.nombre;
-    const pre = req.body.precio;
-    const stk = req.body.stock;
-    // Crear un JSON
-    const prod = { title: nom, price: pre, stock: stk };
-    // buscar en la base de datos por nombre del producto
-    let i=0;
-    for (const p of productos) {
-        if (p.title.toLowerCase() == nom.toLowerCase()){
-            // reemplazar por el nuevo producto
-            productos[i]=prod;
-            break;
-        }
-        i++;
-    }
-    // Responder a cliente
-    console.log(productos);
-    res.send({ status: "OK", msg: "Editado Satisfactoriamente" });
+app.get("/usuario/registrar/:nombre-:apellido-:documento-:t_documento-:nickname-:correo-:password", function (req, res) {
+    crear(req.params.nombre,req.params.apellido,req.params.t_documento,req.params.documento,req.params.nickname,req.params.correo,req.params.password)
+    res.send("mensaje predeterminado de backend registro");
 })
 
-// Api rest eliminar producto en BD
-// ruta:"/producto/eliminar"
-// Metodo: POST
-// Datos de entrada:{nombre:nombre,precio:precio,stock:stock}
-// Datos de respuesta:{status:"OK",msg:"Producto Eliminado Satisfactoriamente"}
-
-app.post("/producto/eliminar", function (req, res) {
-    // capturar los datos que vienen del cliente
-    const nom = req.body.nombre;
-    // buscar en la base de datos por nombre del producto
-    let i=0;
-    for (const p of productos) {
-        if (p.title.toLowerCase == nom.toLowerCase()){
-            // eliminar por el nuevo producto
-            productos.splice(i,1); //Elimina el producto
-            break;
-        }
-        i++;
-    }
-    // Responder a cliente
-    console.log(productos);
-    res.send({status:"OK",msg:"Producto Eliminado Satisfactoriamente"});
-})
-
-app.get("/consultar/trabajadores/:rol", function (req, res) {
-    const prod = persona
-    res.send(prod);
-})
-
-app.get("/consultar/trabajador/:nickname", function(req,res) {
-    const prod = persona.find(p => p.nickname === req.params.nickname)
+app.get("/consultar/trabajador/:nickname", async function(req,res) {
+    const prod = await PersonasModel.find(p => p.nickname === req.params.nickname)
     res.send(prod);
 })
 
