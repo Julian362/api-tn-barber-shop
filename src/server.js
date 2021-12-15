@@ -10,8 +10,8 @@ app.use(express.json());
 
 const url = "mongodb+srv://DavHD:PhmFRjvYHmaSB4P@misiontic.d2mqp.mongodb.net/barbershop?retryWrites=true&w=majority";
 
-mongoose.connect(url,{ 
-   
+mongoose.connect(url,{
+
 })
 .then( ()=> console.log('Conectado a mongo'))
 .catch( (e)=> console.log('error en la conexion es' + e))
@@ -97,6 +97,11 @@ app.get("/usuario/registrar/:nombre-:apellido-:documento-:t_documento-:nickname-
 
 app.get("/consultar/trabajador/:nickname", async function(req,res) {
     const prod = await PersonasModel.find(p => p.nickname === req.params.nickname)
+    res.send(prod);
+})
+app.get("/usuario/iniciarSesion/:correo-:password", async function(req,res) {
+    const prod = await PersonasModel.findOne({correo:req.params.correo,contraseña: req.params.password}).clone()
+    console.log(prod)
     res.send(prod);
 })
 
