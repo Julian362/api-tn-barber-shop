@@ -131,7 +131,8 @@ app.get("/usuario/editar/:nombre-:apellido-:documento-:t_documento-:nickname-:co
 })
 
 //consultar servicios agendados (estado="programado") por nickname
-app.get("/consultar/citasAgendadas/:nickname-:estado", async function (req, res) {
+app.get("/consultar/citasAgendadas/:nickname-:estado", 
+async function (req, res) {
     const listaAgenda = await AgendaModel.find().clone();
     console.log(listaAgenda+"---")
     const respuesta = [{
@@ -157,6 +158,17 @@ app.get("/consultar/citasAgendadas/:nickname-:estado", async function (req, res)
     }]
     res.send(respuesta);
 })
+
+app.get("/consultar/agenda/:estado", 
+async function(req,res){
+    const agendados = AgendaModel.find();
+    res.send(adendados)
+})
+
+
+//     mostrar(req.params.servicio,req.params.fecha,req.params.hora_inicio,req.params.duracion,req.params.estado)
+//     res.send("mensaje predeterminado de backend registro")
+// })
 
 
 app.listen(8081, function () {
