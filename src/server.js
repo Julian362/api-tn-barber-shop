@@ -24,7 +24,7 @@ const PersonasSchema = mongoose.Schema({
     nickname:String,
     correo:String,
     password:String,
-    rol:String,
+    rol:String
 },{versionKey:false})
 
 const PersonasModel = mongoose.model('Personas',PersonasSchema)
@@ -85,12 +85,14 @@ const AgendaSchema = mongoose.Schema({
     apellido:String,
     nickname:String,
     correo:String,
-    estado:String,
+    estado:String
 },{versionKey:false})
-const AgendaModel = mongoose.model('agenda', AgendaSchema)
+const AgendaModel = mongoose.model('agendas', AgendaSchema)
 
 
-
+module.exports = {
+    AgendaModel,PersonasModel
+}
 app.get("/personas/:nickname", async function (req, res) {
     // find es una funcion que ayuda a buscar dentro de un array
     // req, trael la consulta con el parametro deseado
@@ -131,32 +133,9 @@ app.get("/usuario/editar/:nombre-:apellido-:documento-:t_documento-:nickname-:co
 })
 
 //consultar servicios agendados (estado="programado") por nickname
-app.get("/consultar/citasAgendadas/:nickname-:estado", 
-async function (req, res) {
-    const listaAgenda = await AgendaModel.find().clone();
-    console.log(listaAgenda+"---")
-    const respuesta = [{
-        servicio:"Marcación de contornos",
-        fecha:"20/01/2022",
-        hora_inicio:"01:00 pm",
-        duracion:"30",
-        nombre:"Brynn",
-        apellido:"Daniello",
-        nickname:"eminchin1",
-        correo:"eminchin1@about.me",
-        estado:"programado"
-    }, {
-        servicio:"Marcación de contornos",
-        fecha:"20/01/2022",
-        hora_inicio:"01:00 pm",
-        duracion:"30",
-        nombre:"Brynn",
-        apellido:"Daniello",
-        nickname:"eminchin1",
-        correo:"eminchin1@about.me",
-        estado:"programado"
-    }]
-    res.send(respuesta);
+app.get("/consultar/citasAgendadas/:nickname-:estado", async function (req, res) {
+    const listaAgenda = await AgendaModel.find({nickname:req.params.nickname,estado:req.params.estado}).clone();
+    res.send(listaAgenda);
 })
 
 app.get("/consultar/agenda/:estado", 
