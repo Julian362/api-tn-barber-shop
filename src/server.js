@@ -140,30 +140,9 @@ app.get("/consultar/citasAgendadas/:nickname-:estado", async function (req, res)
 
 //consultar historial de servicios agendados (estado="finalizado") por nickname
 app.get("/consultar/Historial/:nickname-:estado", async function (req, res) {
-    const listaAgenda = await AgendaModel.find().clone();
-    console.log(listaAgenda+"---")
-    const respuesta = [{
-        servicio:"Limpieza facial",
-        fecha:"07/12/2021",
-        hora_inicio:"05:00 pm",
-        duracion:"60",
-        nombre:"Jeramie",
-        apellido:"Habbergham",
-        nickname:"eminchin1",
-        correo:"eminchin1@about.me",
-        estado:"finalizado",
-    }, {
-        servicio:"Diseño de corte y barba",
-        fecha:"15/12/2021",
-        hora_inicio:"04:00 pm",
-        duracion:"60",
-        nombre:"Vanya",
-        apellido:"Jenman",
-        nickname:"eminchin1",
-        correo:"eminchin1@about.me",
-        estado:"finalizado",
-    }]
-    res.send(respuesta);
+    const listaHistorico = await AgendaModel.find({nickname:req.params.nickname,estado:req.params.estado}).clone();
+    console.log(listaHistorico)
+    res.send(listaHistorico);
 })
 
 
