@@ -25,6 +25,7 @@ const PersonasSchema = mongoose.Schema({
     correo:String,
     password:String,
     rol:String,
+    cargo:String,
 },{versionKey:false})
 
 const PersonasModel = mongoose.model('Personas',PersonasSchema)
@@ -32,7 +33,7 @@ const PersonasModel = mongoose.model('Personas',PersonasSchema)
 
 const mostrar = async ()=>{
     const RegistrosTotales = await PersonasModel.find();
-    console.log(RegistrosTotales)
+    // console.log(RegistrosTotales)
 }
 // const mostrarEspecifico = async (Nick) =>{
 //     const RegistroEspecifico = await PersonasModel.findOne({Nickname:Nick});
@@ -65,6 +66,21 @@ const actualizar = async (nombre,apellido,t_documento,n_documento,nickname,corre
         }
     })
 }
+
+const actualizarTrabajador = async (nombre,apellido,n_documento,t_documento,nickname,correo,contrasena,rol)=>{
+    const persona = await PersonasModel.updateOne({nickname:nickname},
+    {
+        $set:{
+            nombre:nombre,
+            apellido:apellido,
+            tipo_documento:t_documento,
+            numero_documento:n_documento,
+            correo:correo,
+            contrasena:contrasena,
+            rol:rol
+        }
+    })
+}
 const eliminar = async (Nick)=>{
     const persona = await PersonasModel.deleteOne({nickname:Nick})
     console.log(persona);
@@ -86,9 +102,10 @@ app.get("/personas/:nickname", async function (req, res) {
 
 app.get("/consultar/trabajadores/:rol", async function (req, res) {
     const prod = await PersonasModel.find();
-    console.log(prod)
     res.send(prod);
 })
+
+
 
 app.get("/usuario/registrar/:nombre-:apellido-:documento-:t_documento-:nickname-:correo-:password", function (req, res) {
     crear(req.params.nombre,req.params.apellido,req.params.t_documento,req.params.documento,req.params.nickname,req.params.correo,req.params.password)
@@ -110,6 +127,47 @@ app.get("/usuario/editar/:nombre-:apellido-:documento-:t_documento-:nickname-:co
     res.send("mensaje predeterminado de backend registro");
 })
 
+
+//Gestión Personal Admin by DavHD.
+
+app.get("/personas/editar/:nombre-:apellido-:documento-:t_documento-:nickname-:correo-:contrasena-:rol", function(req,res){
+    const persona = actualizarTrabajador(req.params.nombre,req.params.apellido,req.params.documento,req.params.t_documento,req.params.nickname,req.params.correo,req.params.contrasena,req.params.rol)
+    res.send("actualizado")
+})
+
+app.get("/usuario/filtrar/:nicknamebuscar", async function(req,res){
+    const persona = await PersonasModel.findOne({nickname:req.params.nicknamebuscar});
+    console.log(persona);
+    res.send(persona);
+})
+
+app.get("/usuario/filtrar/cargo/:rol", async function(req,res){
+    const persona1 = await PersonasModel.find({rol:req.params.rol});
+    res.send(persona1); 
+})
+
+app.get("/usuarios/filtrar/registrostotales", async function(req,res){
+    const persona = await PersonasModel.find();
+    res.send(persona);
+})
+
+
+// app.get("/usuario/filtrar/cargo/super/:rol", async function(req,res){
+//     const persona2 = await PersonasModel.find({rol:req.params.rol});
+//     res.send(persona2); 
+// })
+
+ 
+
+// const mostrar1 = async ()=>{
+//     const RegistrosTotales2 = await PersonasModel.find({cargo:"barbero"});
+//     console.log(RegistrosTotales2);
+// }
+// mostrar1();
+// Puerto para hacer la conexión entre el back y el front
+
+
 app.listen(8081, function () {
     console.log("Servidor corriendo Puerto 8081");
 })
+
