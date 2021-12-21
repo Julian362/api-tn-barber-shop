@@ -106,6 +106,18 @@ const eliminarAgenda = async (id) => {
 module.exports = {
     AgendaModel, PersonasModel
 }
+// -------------------------------------//
+const calificacionSchema = mongoose.Schema({
+    servicio: String,
+    comentario: String,
+    nickname: String,
+    calificacion: String,
+    fecha: String,
+}, { versionKey: false })
+const CalificacionModel = mongoose.model('calificaciones', calificacionSchema)
+
+
+
 app.get("/personas/:nickname", async function (req, res) {
     // find es una funcion que ayuda a buscar dentro de un array
     // req, trael la consulta con el parametro deseado
@@ -215,6 +227,10 @@ app.get("/eliminar/agenda/:_id", function (req,res) {
     res.send({})
 })
 
+app.get("/calificacion/listar",async function (req, res) {
+    const cal =await CalificacionModel.find();
+    res.send(cal)
+})
 
 app.listen(8081, function () {
     console.log("Servidor corriendo Puerto 8081")
